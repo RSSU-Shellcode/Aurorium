@@ -1,0 +1,12 @@
+{
+  "pe_loader": {
+    "pe_path": {
+      "place_holder": "set the pe file path or url path"
+    }
+
+  },
+
+  "ssce": {
+
+  }
+}
