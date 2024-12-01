@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/lang"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -47,13 +48,9 @@ func (ldr *peLoader) initLoadMode() {
 }
 
 func (ldr *peLoader) initPEPathAndCMD() {
-
 	label1 := widget.NewLabel(lang.L("pe_loader.pe_image"))
 	label2 := widget.NewLabel(lang.L("pe_loader.cmd_line"))
-	//
-	grid := container.NewGridWithRows(2, label1, label2)
-
-	// label := widget.NewLabel(lang.L("pe_loader.pe_image"))
+	grid1 := container.NewGridWithRows(2, label1, label2)
 
 	path := widget.NewEntry()
 	path.OnChanged = func(string) {
@@ -61,29 +58,34 @@ func (ldr *peLoader) initPEPathAndCMD() {
 	}
 	path.SetPlaceHolder(lang.L("pe_loader.pe_path.place_holder"))
 
+	open := widget.NewButton("OPEN", func() {
+
+	})
+	open.Importance = widget.HighImportance
+
+	hBox := container.NewHBox(layout.NewSpacer(), open)
+	com := container.NewPadded(hBox)
+
+	com1 := container.NewStack(path, com)
+
 	cmd := widget.NewEntry()
 	cmd.OnChanged = func(string) {
 		ldr.cmd = cmd.Text
 	}
+	grid2 := container.NewGridWithRows(2, com1, cmd)
 
-	// text := "https://github.com/RSSU-Shellcode/Aurorium"
-	// size := ldr.ctx.app.Settings().Theme().Size(theme.SizeNameText) * 2
-	//
-	// ss := fyne.MeasureText(text, size, path.TextStyle)
-	// ss.Height = path.CreateRenderer().MinSize().Height
-	//
-	// fmt.Println(ss.Height)
+	// form := widget.NewForm()
+	// form.Append(lang.L("pe_loader.pe_image"), com)
+	// form.Append(lang.L("pe_loader.cmd_line"), cmd)
 
-	// box := container.NewStack(label, path)
+	content := container.New(&CustomLayout{}, grid1, grid2)
 
-	form := widget.NewForm()
-	form.Orientation = widget.Vertical
-	form.Append("", grid)
-	form.Append("", cmd)
+	ldr.box.Add(content)
 
-	// grid2 := container.NewGridWithRows(2, path, cmd)
-	// box := container.NewPadded(grid, form)
-	ldr.box.Add(form)
+	open1 := widget.NewButton("Open", func() {
+
+	})
+	ldr.box.Add(open1)
 }
 
 func (ldr *peLoader) initCommandLine() {
