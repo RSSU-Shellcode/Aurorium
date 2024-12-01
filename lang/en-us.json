@@ -1,9 +1,13 @@
 {
   "pe_loader": {
-    "pe_path": {
-      "place_holder": "set the pe file path or url path"
-    }
+    "load_mode": "Load Mode:",
 
+    "pe_image": "PE Image:",
+    "pe_path": {
+      "place_holder": "set the PE file path or URL"
+    },
+
+    "cmd_line": "Command Line:"
   },
 
   "ssce": {

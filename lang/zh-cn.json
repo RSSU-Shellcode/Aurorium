@@ -1,9 +1,13 @@
 {
   "pe_loader": {
+    "load_mode": "加载模式:",
+
+    "pe_image": "PE镜像:",
     "pe_path": {
       "place_holder": "设置PE文件路径或者URL"
-    }
+    },
 
+    "cmd_line": "命令行参数:"
   },
 
   "ssce": {
