@@ -35,7 +35,7 @@ func (p *Program) Main() error {
 		return fmt.Errorf("failed to inititalize theme: %s", err)
 	}
 
-	p.peLoader = newPELoader()
+	p.peLoader = newPELoader(p)
 
 	p.initLayout()
 

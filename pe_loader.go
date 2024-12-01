@@ -10,20 +10,24 @@ import (
 )
 
 type peLoader struct {
-	grid *fyne.Container
+	ctx *Program
+
+	box *fyne.Container
 
 	mode string
 	path string
 	cmd  string
 }
 
-func newPELoader() *peLoader {
+func newPELoader(ctx *Program) *peLoader {
 	loader := peLoader{
-		grid: container.NewGridWithRows(4),
+		ctx: ctx,
+		box: container.NewVBox(),
 	}
 	loader.initLoadMode()
-	loader.initPEPath()
-	loader.initCommandLine()
+
+	loader.initPEPathAndCMD()
+
 	return &loader
 }
 
@@ -39,22 +43,47 @@ func (ldr *peLoader) initLoadMode() {
 	modes.SetSelected(options[0])
 
 	box := container.NewHBox(label, modes)
-	ldr.grid.Add(box)
+	ldr.box.Add(box)
 }
 
-func (ldr *peLoader) initPEPath() {
-	label := widget.NewLabel(lang.L("pe_loader.pe_image"))
+func (ldr *peLoader) initPEPathAndCMD() {
+
+	label1 := widget.NewLabel(lang.L("pe_loader.pe_image"))
+	label2 := widget.NewLabel(lang.L("pe_loader.cmd_line"))
+	//
+	grid := container.NewGridWithRows(2, label1, label2)
+
+	// label := widget.NewLabel(lang.L("pe_loader.pe_image"))
 
 	path := widget.NewEntry()
-	path.OnChanged = func(path string) {
-		ldr.path = path
+	path.OnChanged = func(string) {
+		ldr.path = path.Text
 	}
 	path.SetPlaceHolder(lang.L("pe_loader.pe_path.place_holder"))
 
-	grid := container.NewGridWithColumns(1, path)
+	cmd := widget.NewEntry()
+	cmd.OnChanged = func(string) {
+		ldr.cmd = cmd.Text
+	}
 
-	box := container.NewHBox(label, grid)
-	ldr.grid.Add(box)
+	// text := "https://github.com/RSSU-Shellcode/Aurorium"
+	// size := ldr.ctx.app.Settings().Theme().Size(theme.SizeNameText) * 2
+	//
+	// ss := fyne.MeasureText(text, size, path.TextStyle)
+	// ss.Height = path.CreateRenderer().MinSize().Height
+	//
+	// fmt.Println(ss.Height)
+
+	// box := container.NewStack(label, path)
+
+	form := widget.NewForm()
+	form.Orientation = widget.Vertical
+	form.Append("", grid)
+	form.Append("", cmd)
+
+	// grid2 := container.NewGridWithRows(2, path, cmd)
+	// box := container.NewPadded(grid, form)
+	ldr.box.Add(form)
 }
 
 func (ldr *peLoader) initCommandLine() {
@@ -66,9 +95,9 @@ func (ldr *peLoader) initCommandLine() {
 	}
 
 	box := container.NewHBox(label, cmd)
-	ldr.grid.Add(box)
+	ldr.box.Add(box)
 }
 
 func (ldr *peLoader) Object() fyne.CanvasObject {
-	return ldr.grid
+	return ldr.box
 }
