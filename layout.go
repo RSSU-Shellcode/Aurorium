@@ -4,10 +4,12 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func (p *Program) initContainer() {
-	grid := container.NewGridWithColumns(3)
+func (p *Program) initLayout() {
+	grid := container.NewGridWithRows(3)
 
-	grid.Add(p.peLoader.pePath)
+	modules := container.NewGridWithColumns(3)
+	modules.Add(p.peLoader.Object())
+	grid.Add(modules)
 
 	p.grid = grid
 }

@@ -1,6 +1,8 @@
 package aurorium
 
 import (
+	"fmt"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 )
@@ -26,14 +28,24 @@ func New() *Program {
 func (p *Program) Main() error {
 	err := p.initLanguage()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to inititalize language: %s", err)
+	}
+	err = p.initTheme()
+	if err != nil {
+		return fmt.Errorf("failed to inititalize theme: %s", err)
 	}
 
 	p.peLoader = newPELoader()
 
-	p.initContainer()
+	p.initLayout()
 
 	w := p.app.NewWindow("Aurorium")
+	w.Resize(fyne.Size{
+		Width:  1000,
+		Height: 600,
+	})
+
+	w.CenterOnScreen()
 	w.SetContent(p.grid)
 	w.Show()
 
