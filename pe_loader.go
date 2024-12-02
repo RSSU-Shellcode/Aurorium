@@ -1,6 +1,7 @@
 package aurorium
 
 import (
+	"net/url"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -52,21 +53,41 @@ func (ldr *peLoader) initPEPathAndCMD() {
 	label2 := widget.NewLabel(lang.L("pe_loader.cmd_line"))
 	grid1 := container.NewGridWithRows(2, label1, label2)
 
-	path := widget.NewEntry()
-	path.OnChanged = func(string) {
-		ldr.path = path.Text
-	}
-	path.SetPlaceHolder(lang.L("pe_loader.pe_path.place_holder"))
-
 	open := widget.NewButton("OPEN", func() {
 
 	})
-	open.Importance = widget.HighImportance
+
+	path := NewEntry()
+
+	path.OnFocusGained = func() {
+		open.Importance = widget.HighImportance
+		open.Refresh()
+	}
+	path.OnFocusLost = func() {
+		open.Importance = widget.MediumImportance
+		open.Refresh()
+	}
+	path.OnChanged = func(string) {
+		ldr.path = path.Text
+
+	}
+	path.SetPlaceHolder(lang.L("pe_loader.pe_path.place_holder"))
+	path.Validator = func(s string) error {
+		if s == "" {
+			return nil
+		}
+		_, err := url.ParseRequestURI(s)
+		return err
+	}
+
+	open.OnTapped = func() {
+
+	}
 
 	hBox := container.NewHBox(layout.NewSpacer(), open)
 	com := container.NewPadded(hBox)
 
-	com1 := container.NewStack(path, com)
+	com1 := container.NewStack(com, path)
 
 	cmd := widget.NewEntry()
 	cmd.OnChanged = func(string) {
