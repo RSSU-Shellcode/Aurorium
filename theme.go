@@ -1,18 +1,12 @@
 package aurorium
 
 import (
-	"bytes"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/theme"
-
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/sfnt"
-	"golang.org/x/image/math/fixed"
 )
 
 type customTheme struct {
@@ -38,28 +32,7 @@ func (p *Program) initTheme() error {
 		if err != nil {
 			return err
 		}
-
-		f, err := sfnt.Parse(data)
-		if err != nil {
-			return err
-		}
-
-		buffer := &sfnt.Buffer{}
-
-		pem := fixed.Int26_6(f.UnitsPerEm())
-		got, err := f.Metrics(buffer, pem, font.HintingNone)
-		if err != nil {
-			return err
-		}
-		fmt.Println(got)
-
-		buf := bytes.NewBuffer(make([]byte, 0, len(data)))
-		_, err = f.WriteSourceTo(buffer, buf)
-		if err != nil {
-			return err
-		}
-
-		*item.res = fyne.NewStaticResource(item.name, buf.Bytes())
+		*item.res = fyne.NewStaticResource(item.name, data)
 	}
 	p.app.Settings().SetTheme(&t)
 	return nil
@@ -77,14 +50,13 @@ func (t *customTheme) Font(style fyne.TextStyle) fyne.Resource {
 }
 
 func (t *customTheme) Size(name fyne.ThemeSizeName) float32 {
-	// fmt.Println(name, t.Theme.Size(name))
 	switch {
 	// disable rounded corners style
 	case strings.Contains(strings.ToLower(string(name)), "radius"):
 		return 0
 	// adjust general text size
 	case string(name) == "text":
-		return 13
+		return 14
 	default:
 		return t.Theme.Size(name)
 	}

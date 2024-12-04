@@ -9,7 +9,7 @@ import (
 func (p *Program) initLayout() {
 	grid := container.NewGridWithRows(3)
 
-	modules := container.NewGridWithColumns(3)
+	modules := container.NewGridWithColumns(2)
 	modules.Add(p.peLoader.Object())
 	grid.Add(modules)
 

@@ -35,16 +35,14 @@ func (p *Program) Main() error {
 		return fmt.Errorf("failed to inititalize theme: %s", err)
 	}
 
-	p.peLoader = newPELoader(p)
-
+	p.peLoader = newPELoader()
 	p.initLayout()
 
 	w := p.app.NewWindow("Aurorium")
 	w.Resize(fyne.Size{
-		Width:  1000,
-		Height: 600,
+		Width:  1280,
+		Height: 720,
 	})
-
 	w.CenterOnScreen()
 	w.SetContent(p.grid)
 	w.Show()
