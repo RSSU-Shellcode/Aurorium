@@ -27,6 +27,7 @@ func newPELoader() *peLoader {
 	}
 	loader.initLoadModeAndArch()
 	loader.initPEPathAndCMD()
+	loader.initGeneralOptions()
 	return &loader
 }
 
@@ -96,10 +97,8 @@ func (ldr *peLoader) initPEPathAndCMD() {
 
 	}
 
-	hBox := container.NewHBox(layout.NewSpacer(), open)
-	com := container.NewPadded(hBox)
-
-	com1 := container.NewStack(path, com)
+	hBox := container.NewHBox(layout.NewSpacer(), container.NewPadded(open))
+	com1 := container.NewStack(path, hBox)
 
 	cmd := widget.NewEntry()
 	cmd.OnChanged = func(string) {
@@ -107,29 +106,40 @@ func (ldr *peLoader) initPEPathAndCMD() {
 	}
 	grid2 := container.NewGridWithRows(2, com1, cmd)
 
+	fmt.Println(grid1.MinSize().Height)
+	fmt.Println(grid2.MinSize().Height)
+
+	fmt.Println(path.MinSize().Height)
+	fmt.Println(com1.MinSize().Height)
+	fmt.Println(cmd.MinSize().Height)
+
 	// form := widget.NewForm()
 	// form.Append(lang.L("pe_loader.pe_image"), com)
 	// form.Append(lang.L("pe_loader.cmd_line"), cmd)
 
-	content := container.New(&CustomLayout{}, grid1, grid2)
+	content := container.New(&CustomLayout{
+		OffHeight: -15,
+	}, grid1, grid2)
 
 	ldr.box.Add(content)
 
-	open1 := widget.NewButton("Open", func() {
-
-	})
-	ldr.box.Add(open1)
 }
 
-func (ldr *peLoader) initCommandLine() {
-	label := widget.NewLabel(lang.L("pe_loader.cmd_line"))
+func (ldr *peLoader) initGeneralOptions() {
+	wait := widget.NewCheck(lang.L("pe_loader.wait_main"), func(check bool) {
 
-	cmd := widget.NewEntry()
-	cmd.OnChanged = func(cmd string) {
-		ldr.cmd = cmd
-	}
+	})
 
-	box := container.NewHBox(label, cmd)
+	instName := widget.NewEntry()
+
+	genInst := widget.NewButton(lang.L("pe_loader.gen_inst"), func() {
+
+	})
+	saveTo := widget.NewButton(lang.L("pe_loader.save_to"), func() {
+
+	})
+
+	box := container.NewHBox(wait, instName, genInst, saveTo)
 	ldr.box.Add(box)
 }
 

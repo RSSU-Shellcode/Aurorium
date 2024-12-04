@@ -2,34 +2,19 @@ package aurorium
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
 
-func (p *Program) initLayout() {
-	grid := container.NewGridWithRows(3)
+// TODO rename it
 
-	modules := container.NewGridWithColumns(2)
-	modules.Add(p.peLoader.Object())
-	grid.Add(modules)
+type CustomLayout struct {
+	ExtendObject []int
 
-	configTpl := widget.NewSelect([]string{"default"}, func(s string) {
-
-	})
-	grid.Add(configTpl)
-
-	logger := widget.NewMultiLineEntry()
-	grid.Add(logger)
-
-	p.grid = grid
+	OffWidth  float32
+	OffHeight float32
 }
 
-type CustomLayout struct{}
-
 func (c *CustomLayout) Layout(objects []fyne.CanvasObject, size fyne.Size) {
-	if len(objects) < 2 {
-		return
-	}
+	//   len(objects) - len(c.ExtendObject)
 
 	// First object uses its MinSize
 	first := objects[0]
@@ -52,7 +37,7 @@ func (c *CustomLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
 	firstMin := objects[0].MinSize()
 	secondMin := objects[1].MinSize()
 	return fyne.NewSize(
-		fyne.Max(firstMin.Width, secondMin.Width),
-		fyne.Max(firstMin.Height, secondMin.Height),
+		fyne.Max(firstMin.Width, secondMin.Width)+c.OffWidth,
+		fyne.Max(firstMin.Height, secondMin.Height)+c.OffHeight,
 	)
 }
