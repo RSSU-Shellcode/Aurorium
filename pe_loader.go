@@ -1,6 +1,7 @@
 package aurorium
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 
@@ -12,39 +13,50 @@ import (
 )
 
 type peLoader struct {
-	ctx *Program
-
 	box *fyne.Container
 
 	mode string
+	arch int
 	path string
 	cmd  string
 }
 
-func newPELoader(ctx *Program) *peLoader {
+func newPELoader() *peLoader {
 	loader := peLoader{
-		ctx: ctx,
 		box: container.NewVBox(),
 	}
-	loader.initLoadMode()
-
+	loader.initLoadModeAndArch()
 	loader.initPEPathAndCMD()
-
 	return &loader
 }
 
-func (ldr *peLoader) initLoadMode() {
-	label := widget.NewLabel(lang.L("pe_loader.load_mode"))
+func (ldr *peLoader) initLoadModeAndArch() {
+	labelArch := widget.NewLabel(lang.L("pe_loader.arch"))
+	options := []string{"x86", "x64"}
+	arch := widget.NewRadioGroup(options, func(arch string) {
+		switch arch {
+		case "x86":
+			ldr.arch = 32
+		case "x64":
+			ldr.arch = 64
+		default:
+			panic(fmt.Sprintf("invalid architecture: %s", arch))
+		}
+	})
+	arch.Required = true
+	arch.Horizontal = true
+	arch.SetSelected(options[0])
 
-	options := []string{"Embed", "HTTP", "File"}
-	modes := widget.NewRadioGroup(options, func(mode string) {
+	labelLM := widget.NewLabel(lang.L("pe_loader.load_mode"))
+	options = []string{"Embed", "HTTP", "File"}
+	mode := widget.NewRadioGroup(options, func(mode string) {
 		ldr.mode = strings.ToLower(mode)
 	})
-	modes.Required = true
-	modes.Horizontal = true
-	modes.SetSelected(options[0])
+	mode.Required = true
+	mode.Horizontal = true
+	mode.SetSelected(options[0])
 
-	box := container.NewHBox(label, modes)
+	box := container.NewHBox(labelLM, mode, labelArch, arch)
 	ldr.box.Add(box)
 }
 
@@ -87,7 +99,7 @@ func (ldr *peLoader) initPEPathAndCMD() {
 	hBox := container.NewHBox(layout.NewSpacer(), open)
 	com := container.NewPadded(hBox)
 
-	com1 := container.NewStack(com, path)
+	com1 := container.NewStack(path, com)
 
 	cmd := widget.NewEntry()
 	cmd.OnChanged = func(string) {
