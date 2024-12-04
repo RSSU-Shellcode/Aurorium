@@ -1,6 +1,7 @@
 {
   "pe_loader": {
     "load_mode": "Load Mode:",
+    "arch": "Architecture:",
 
     "pe_image": "PE Image:",
     "pe_path": {
