@@ -8,7 +8,12 @@
       "place_holder": "设置PE文件路径或URL"
     },
 
-    "cmd_line": "命令行参数:"
+    "cmd_line": "命令行参数:",
+
+    "wait_main": "等待主函数",
+
+    "gen_inst": "生成实例",
+    "save_to": "保存到..."
   },
 
   "ssce": {

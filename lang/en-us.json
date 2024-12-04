@@ -7,8 +7,12 @@
     "pe_path": {
       "place_holder": "set the PE file path or URL"
     },
+    "cmd_line": "Command Line:",
 
-    "cmd_line": "Command Line:"
+    "wait_main": "Wait Main",
+
+    "gen_inst": "Generate Instance",
+    "save_to": "Save To..."
   },
 
   "ssce": {
