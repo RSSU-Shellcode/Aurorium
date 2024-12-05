@@ -2,42 +2,79 @@ package aurorium
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
 )
 
-// TODO rename it
-
-type CustomLayout struct {
-	ExtendObject []int
+type HFlex struct {
+	Extend  []int
+	Padding float32
 
 	OffWidth  float32
 	OffHeight float32
 }
 
-func (c *CustomLayout) Layout(objects []fyne.CanvasObject, size fyne.Size) {
-	//   len(objects) - len(c.ExtendObject)
-
-	// First object uses its MinSize
-	first := objects[0]
-	firstMin := first.MinSize()
-	first.Resize(firstMin)
-	first.Move(fyne.NewPos(0, 0))
-
-	// Second object takes the remaining space
-	second := objects[1]
-	second.Resize(fyne.NewSize(size.Width-firstMin.Width, firstMin.Height))
-	second.Move(fyne.NewPos(firstMin.Width, 0))
+func NewHFlex(extend ...int) *HFlex {
+	return &HFlex{
+		Extend:  extend,
+		Padding: theme.Padding(),
+	}
 }
 
-func (c *CustomLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
-	if len(objects) < 2 {
-		return fyne.NewSize(0, 0)
+func (flex *HFlex) Layout(objects []fyne.CanvasObject, size fyne.Size) {
+	// calculate space for extend objects
+	var fixed float32
+	for idx, obj := range objects {
+		if !obj.Visible() {
+			continue
+		}
+		if flex.isExtend(idx) {
+			continue
+		}
+		fixed += obj.MinSize().Width + flex.Padding
 	}
+	// calculate width for extend objects
+	numExtend := float32(len(flex.Extend))
+	rem := size.Width - fixed
+	rem -= numExtend * flex.Padding
+	width := rem / numExtend
+	// resize and move objects
+	var x float32
+	for idx, obj := range objects {
+		ms := obj.MinSize()
+		ms.Height = size.Height
+		if flex.isExtend(idx) {
+			ms.Width = width
+			obj.Resize(ms)
+		} else {
+			obj.Resize(ms)
+		}
+		obj.Move(fyne.NewPos(x, 0))
+		x += ms.Width + flex.Padding
+	}
+}
 
-	// Minimum size is the sum of the first object's MinSize and the second's MinHeight
-	firstMin := objects[0].MinSize()
-	secondMin := objects[1].MinSize()
-	return fyne.NewSize(
-		fyne.Max(firstMin.Width, secondMin.Width)+c.OffWidth,
-		fyne.Max(firstMin.Height, secondMin.Height)+c.OffHeight,
-	)
+func (flex *HFlex) MinSize(objects []fyne.CanvasObject) fyne.Size {
+	size := fyne.NewSize(0, 0)
+	for _, obj := range objects {
+		if !obj.Visible() {
+			continue
+		}
+		ms := obj.MinSize()
+		size.Width += ms.Width + flex.Padding
+		size.Height = fyne.Max(size.Height, ms.Height)
+	}
+	size.Width -= flex.Padding
+	// adjust size about offset options
+	size.Width += flex.OffWidth
+	size.Height += flex.OffHeight
+	return size
+}
+
+func (flex *HFlex) isExtend(idx int) bool {
+	for _, v := range flex.Extend {
+		if v == idx {
+			return true
+		}
+	}
+	return false
 }
