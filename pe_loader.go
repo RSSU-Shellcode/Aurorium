@@ -8,7 +8,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/lang"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -25,6 +24,9 @@ func newPELoader() *peLoader {
 	loader := peLoader{
 		box: container.NewVBox(),
 	}
+
+	loader.box.Add(widget.NewRichTextWithText("[GRT PELoader]"))
+
 	loader.initLoadModeAndArch()
 	loader.initPEPathAndCMD()
 	loader.initGeneralOptions()
@@ -97,32 +99,28 @@ func (ldr *peLoader) initPEPathAndCMD() {
 
 	}
 
-	hBox := container.NewHBox(layout.NewSpacer(), container.NewPadded(open))
-	com1 := container.NewStack(path, hBox)
+	cls := widget.NewButton("Clear", func() {
+
+	})
+	cls.SetText("Clear1")
 
 	cmd := widget.NewEntry()
 	cmd.OnChanged = func(string) {
 		ldr.cmd = cmd.Text
 	}
-	grid2 := container.NewGridWithRows(2, com1, cmd)
+	// widget.NewButton("clean")
 
-	fmt.Println(grid1.MinSize().Height)
-	fmt.Println(grid2.MinSize().Height)
+	grid2 := container.NewGridWithRows(2, path, cmd)
 
-	fmt.Println(path.MinSize().Height)
-	fmt.Println(com1.MinSize().Height)
-	fmt.Println(cmd.MinSize().Height)
+	grid3 := container.NewGridWithRows(2, open, cls)
 
 	// form := widget.NewForm()
 	// form.Append(lang.L("pe_loader.pe_image"), com)
 	// form.Append(lang.L("pe_loader.cmd_line"), cmd)
 
-	content := container.New(&CustomLayout{
-		OffHeight: -15,
-	}, grid1, grid2)
-
+	hFlex := NewHFlex(1)
+	content := container.New(hFlex, grid1, grid2, grid3)
 	ldr.box.Add(content)
-
 }
 
 func (ldr *peLoader) initGeneralOptions() {
@@ -139,8 +137,9 @@ func (ldr *peLoader) initGeneralOptions() {
 
 	})
 
-	box := container.NewHBox(wait, instName, genInst, saveTo)
-	ldr.box.Add(box)
+	hFlex := NewHFlex(1)
+	content := container.New(hFlex, wait, instName, genInst, saveTo)
+	ldr.box.Add(content)
 }
 
 func (ldr *peLoader) Object() fyne.CanvasObject {
